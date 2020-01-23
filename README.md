@@ -17,8 +17,8 @@ Simpred takes a snpEff-generated annotation file and for every SNV except the on
 
 A csv file containing the result:
 
-Scaffold | Coord | Ref | Var | Type Effect | Transcript | Ref_aa | Coord_aa | Var_aa | Ref_aa_abbrev | Var_aa_abbrev | aaI7 | exchgb_ref_var | exchgb_var_ref | sneath_dissim
--------- | ----- | --- | --- | ----------- | ---------- | ------ | -------- | ------ | ------------- | ------------- | ---- | -------------- | -------------- | -------------
+Scaffold | Coord | Ref | Var | Type | Effect | Transcript | Ref_aa | Coord_aa | Var_aa | Ref_aa_abbrev | Var_aa_abbrev | aaI7 | exchgb_ref_var | exchgb_var_ref | sneath_dissim
+-------- | ----- | --- | --- | ---- | ------ | ---------- | ------ | -------- | ------ | ------------- | ------------- | ---- | -------------- | -------------- | -------------
 Sc9M7eS_1_HRSCAF_2 | 362173 | A | C | missense_variant | MODERATE | mRNA20769 | Ile | 46 | Leu | I | L | 0.05 | 0.52 | 0.34 | 0.11
 Sc9M7eS_1_HRSCAF_2 | 412292 | T | A | missense_variant | MODERATE | mRNA20769 | Asp | 163 | Glu | D | E | 0.16 | 0.16 | 0.46 | 0.16
 Sc9M7eS_1_HRSCAF_2 | 456817 | T | C | missense_variant | MODERATE | mRNA20770 | Lys | 3194 | Arg | K | R | 0.25 | 0.52 | 0.3 | 0.31
