@@ -9,9 +9,13 @@ Simpred takes a snpEff-generated annotation file and for every SNV except the on
 2. The Exchangeability of Amino Acids in Proteins. [[2]](#2) 
 3. The Sneath dissimilarity index. [[3]](#3)
 
+## Input
+
+A `gzip`ped vcf file from the [`snpEff`](http://snpeff.sourceforge.net/about.html) software. 
+
 ## Usage
 
-```simpred mySnpEff_file.vcf > result.csv```
+```python3 simpred.py examples/Borneo_sumatra_malaysia_modern_SNPeff_moderate.vcf.gz > output.csv```
 
 ## Output
 
