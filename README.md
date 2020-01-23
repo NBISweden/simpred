@@ -3,7 +3,7 @@
 SNV impact predictor
 
 ## Synopsis
-Simpred takes a snpEff-generated annotation file and for every SNV except the ones annotated as "modifier" it computes the potential substitution effect based on the following sets of descriptors:
+Simpred takes a snpEff-generated annotation file and for every SNV except the ones annotated as "modifier" it computes the potential substitution effect (relative to the max possible substitution effect) based on the following sets of descriptors:
 
 1. The aaI7 set of descriptors-based effect. [[1]](#1) 
 2. The Exchangeability of Amino Acids in Proteins. [[2]](#2) 
