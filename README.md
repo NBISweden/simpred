@@ -22,6 +22,8 @@ Scaffold | Coord | Ref | Var | Type | Effect | Transcript | Ref_aa | Coord_aa | 
 Sc9M7eS_1_HRSCAF_2 | 362173 | A | C | missense_variant | MODERATE | mRNA20769 | Ile | 46 | Leu | I | L | 0.05 | 0.52 | 0.34 | 0.11
 Sc9M7eS_1_HRSCAF_2 | 412292 | T | A | missense_variant | MODERATE | mRNA20769 | Asp | 163 | Glu | D | E | 0.16 | 0.16 | 0.46 | 0.16
 
+**Note:** The exchaneability relation is non-symmetrical and, thus, we provide the value for both reference -> variant (`exchgb_ref_var`) and the variant -> reference (`exchgb_var_ref`) substitution.
+
 ## References
 <a id="1">[1]</a> [Rudnicki WR, Komorowski J (2010). Feature Synthesis and Extraction for the Construction of Generalized Properties of Amino Acids. Rough Sets and Current Trends in Computing Vol.3066, ed Tsumoto S., Słowiński R., Komorowski J. G-BJ. (Springer, Berlin, Heidelberg), pp 786-791.](https://www.researchgate.net/publication/220801316_Feature_Synthesis_and_Extraction_for_the_Construction_of_Generalized_Properties_of_Amino_Acids)  
 <a id="2">[2]</a> [Lev Y. Yampolsky and Arlin Stoltzfus. GENETICS August 1, 2005 vol. 170 no. 4 1459-1472;](https://doi.org/10.1534/genetics.104.039107)  
