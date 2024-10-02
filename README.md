@@ -10,6 +10,8 @@ Simpred takes a snpEff-generated annotation file and for every SNV except the on
 3. The Sneath dissimilarity index. [[3]](#3)
 4. The Grantham's distance. [[4]](#4)
 
+**Note** In the previous version, the effect for exchangeability was computed as $(effect_{max} - effect) / effect_{max}$ and now it has, for consistency, changed to $effect / effect_{max}$ for all descriptors!
+
 ## Input
 
 A `gzip`ped vcf file from the [`snpEff`](http://snpeff.sourceforge.net/about.html) software. 
@@ -32,6 +34,9 @@ A csv file containing the result:
 | Sc9M7eS_1_HRSCAF_2     | 463630 | T   | C   | missense_variant | MODERATE  | mRNA20770  | Asn    | 923      | Ser    | N             | S             | 0.33   | 0.62          | 0.56          | 0.21     | 0.28 |
 
 **Note:** The exchaneability relation is non-symmetrical and, thus, we provide the value for both reference -> variant (`exchgb_ref_var`) and the variant -> reference (`exchgb_var_ref`) substitution.
+
+## Adding new descriptors
+By default, simpred from version 2.0 loads all descriptors stored as csv file in *./data* directory. If you want to add your own descriptor, follow the format of csv files in that folder. Importantly, the first line is the name of the descriptor as it will appear in the hash preceded by # symbol, e.g. #grantham. This has to be a single word, no spaces (underscores allowed though). All lines beginning with # will be treated as comment. Simpred automatically checks whether the descriptor is symmetric or not, i.e. if cost of Ref->Var substitution is the same as the cost of Var->Ref and in case of non-symmetric descriptor both values will be computed.
 
 ## References
 <a id="1">[1]</a> [Rudnicki WR, Komorowski J (2010). Feature Synthesis and Extraction for the Construction of Generalized Properties of Amino Acids. Rough Sets and Current Trends in Computing Vol.3066, ed Tsumoto S., Słowiński R., Komorowski J. G-BJ. (Springer, Berlin, Heidelberg), pp 786-791.](https://www.researchgate.net/publication/220801316_Feature_Synthesis_and_Extraction_for_the_Construction_of_Generalized_Properties_of_Amino_Acids)  
