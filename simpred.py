@@ -49,10 +49,15 @@ def parseSNPEffFile(f, aa_dict):
 				ann = ann[1:]
 				#print(ann)
 				for item in ann:
+				    # Handle only variants annotated as not 'MODIFIER'
 				    if not 'MODIFIER' in item:
-					    parsed_vals = parseSNPEffAnn(item, aa_dict)
-					    parsed_str = ' '.join(parsed_vals.values()).strip()
-					    print(scaffold, coord, ref, var, parsed_str)
+				        try:
+				            parsed_vals = parseSNPEffAnn(item, aa_dict)
+				            parsed_str = ' '.join(parsed_vals.values()).strip()
+				            print(scaffold, coord, ref, var, parsed_str)
+				        except Exception as e:
+				        	print(f"Error parsing SNPEff annotation: {e}")
+
 
 def parseSNPEffAnn(ann, aa_dict):
 #['missense_variant|MODERATE|Sc9M7eS_1763_HRSCAF_2674_28679|gene07994|transcript|mRNA07994|protein_coding|4/14|c.3640G>A|p.Glu1214Lys|3640/5781|3640/5781|1214/1926||,T|', 'missense_variant|MODERATE|Sc9M7eS_1763_HRSCAF_2674_28679|gene07996|transcript|mRNA07996|protein_coding|4/13|c.3640G>A|p.Glu1214Lys|3640/5610|3640/5610|1214/1869||,T|', 'intron_variant|MODIFIER|Sc9M7eS_1763_HRSCAF_2674_28679|gene07995|transcript|mRNA07995|protein_coding|3/9|c.455-4448G>A||||||,T|', 'intron_variant|MODIFIER|Sc9M7eS_1763_HRSCAF_2674_28679|gene07997|transcript|mRNA07997|protein_coding|3/10|c.455-4448G>A||||||,T|', 'intron_variant|MODIFIER|Sc9M7eS_1763_HRSCAF_2674_28679|gene07998|transcript|mRNA07998|protein_coding|3/8|c.455-4448G>A||||||;AN=26;AC=7']
