@@ -9,7 +9,7 @@ import pandas as pd
 
 def readAnnotationMatrices():
 	data = {}
-	data['aai7'] = pd.read_csv('data/idx_7aaI.csv', index_col = ['Src'], skiprows = 4)
+	data['aai7'] = pd.read_csv('data/idx_7aaI.csv', index_col = ['Src'], comment = '#', skip_blank_lines = True)
 	data['exchgb'] = pd.read_csv('data/idx_exchangeability.csv', index_col = ['Src'], skiprows = 4)
 	data['sneath'] = pd.read_csv('data/idx_sneath_dissimilarity.csv', index_col = ['name'], skiprows = 4)
 	return(data)
@@ -24,15 +24,14 @@ def load_aa_data():
 	aas = dict(zip(keys, values))
 	return(aas)
 	
-def aa3_to_aa1(aaa):
-	global aas
+def aa3_to_aa1(aaa, aa_dict):
 	if aaa != '':
-		code = aas[aaa]
+		code = aa_dict[aaa]
 	else:
 		code = ''
 	return(code)
 	
-def parseSNPEffFile(f):
+def parseSNPEffFile(f, aa_dict):
 	for line in f:
 		if not line.startswith('#'):						# handle comments
 			if 'missense_variant' in line:					# fish out missense variants only
@@ -50,14 +49,14 @@ def parseSNPEffFile(f):
 				ann = ann[1:]
 				#print(ann)
 				for item in ann:
-					vals = parseSNPEffAnn(item).values()
+					vals = parseSNPEffAnn(item, aa_dict).values()
 					parsed = ''
 					for i in vals:
 						parsed = parsed + ' ' + i
 					if "MODIFIER" not in parsed:
 						print(scaffold, coord, ref, var, parsed.strip())
         
-def parseSNPEffAnn(ann):
+def parseSNPEffAnn(ann, aa_dict):
 #['missense_variant|MODERATE|Sc9M7eS_1763_HRSCAF_2674_28679|gene07994|transcript|mRNA07994|protein_coding|4/14|c.3640G>A|p.Glu1214Lys|3640/5781|3640/5781|1214/1926||,T|', 'missense_variant|MODERATE|Sc9M7eS_1763_HRSCAF_2674_28679|gene07996|transcript|mRNA07996|protein_coding|4/13|c.3640G>A|p.Glu1214Lys|3640/5610|3640/5610|1214/1869||,T|', 'intron_variant|MODIFIER|Sc9M7eS_1763_HRSCAF_2674_28679|gene07995|transcript|mRNA07995|protein_coding|3/9|c.455-4448G>A||||||,T|', 'intron_variant|MODIFIER|Sc9M7eS_1763_HRSCAF_2674_28679|gene07997|transcript|mRNA07997|protein_coding|3/10|c.455-4448G>A||||||,T|', 'intron_variant|MODIFIER|Sc9M7eS_1763_HRSCAF_2674_28679|gene07998|transcript|mRNA07998|protein_coding|3/8|c.455-4448G>A||||||;AN=26;AC=7']
 	global ann_exchgb
 	d = {}
@@ -73,8 +72,8 @@ def parseSNPEffAnn(ann):
 	d['ref'] = aa[:3]
 	d['aa'] = aa[3:-3]
 	d['var'] = aa[-3:]
-	d['aa1'] = aa3_to_aa1(d['ref'])
-	d['aa2'] = aa3_to_aa1(d['var'])
+	d['aa1'] = aa3_to_aa1(d['ref'], aa_dict)
+	d['aa2'] = aa3_to_aa1(d['var'], aa_dict)
 	if (d['ref']) != '':
 		d['aai7'] = str(round((ann_aai7[d['aa1']][d['aa2']]) / ann_aai7_max, 2))
 		d['exchgb1'] = str(round((ann_exchgb_max - ann_exchgb[d['aa1']][d['aa2']]) / ann_exchgb_max, 2))
@@ -88,7 +87,7 @@ ann_data = readAnnotationMatrices()
 ann_aai7 = ann_data['aai7']
 ann_exchgb = ann_data['exchgb']
 ann_sneath = ann_data['sneath']
-aas = load_aa_data()
+aa_dict = load_aa_data()
 ann_aai7_max = np.nanmax(ann_data['aai7'].values)
 ann_exchgb_max = np.nanmax(ann_data['exchgb'].values)
 ann_sneath_max = np.nanmax(ann_data['sneath'].values)
@@ -96,10 +95,10 @@ ann_sneath_max = np.nanmax(ann_data['sneath'].values)
 print('Scaffold Coord Ref Var Type Effect Transcript Ref_aa Coord_aa Var_aa Ref_aa_abbrev Var_aa_abbrev aaI7 exchgb_ref_var exchgb_var_ref sneath_dissim')
 if is_gz_file(sys.argv[1]):
     with gzip.open(sys.argv[1], 'rt') as f:
-    	parseSNPEffFile(f)
+    	parseSNPEffFile(f, aa_dict)
 else:
     with open(sys.argv[1], 'r') as f:
-    	parseSNPEffFile(f)
+    	parseSNPEffFile(f, aa_dict)
 
 
 
