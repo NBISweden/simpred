@@ -100,8 +100,11 @@ def parseSNPEffAnn(ann, aa_dict):
 	d['aa2'] = aa3_to_aa1(d['var'], aa_dict)
 	if (d['ref']) != '':
 		for key in ann_data:
-			d[key + 'RV'] = str(round((max_vals[key] - ann_data[key][d['aa1']][d['aa2']]) / max_vals[key], 2))
-			d[key + 'VR'] = str(round((max_vals[key] - ann_data[key][d['aa2']][d['aa1']]) / max_vals[key], 2))
+			if is_symmetric[key]:
+				d[key] = str(round((ann_data[key][d['aa1']][d['aa2']]) / max_vals[key], 2))
+			else:
+				d[key + 'RefVar'] = str(round((ann_data[key][d['aa1']][d['aa2']]) / max_vals[key], 2))
+				d[key + 'VarRef'] = str(round((ann_data[key][d['aa2']][d['aa1']]) / max_vals[key], 2))
 	return(d)
 
 def create_key_suffix_string(my_dict):
@@ -109,8 +112,11 @@ def create_key_suffix_string(my_dict):
     result_list = []
     
     for key in my_dict:
-        result_list.append(f"{key}_RefVar")  # Append the key with 'RV' suffix
-        result_list.append(f"{key}_VarRef")  # Append the key with 'VR' suffix
+        if is_symmetric[key]:
+            result_list.append(f"{key}")
+        else:
+            result_list.append(f"{key}_RefVar")  # Append the key with 'RV' suffix
+            result_list.append(f"{key}_VarRef")  # Append the key with 'VR' suffix
     
     # Join the list elements into a single string, separated by spaces (or any delimiter you prefer)
     result_string = ' '.join(result_list)
@@ -131,16 +137,18 @@ def check_symmetry(df):
 aa_dict = load_aa_data()
 ann_data = readAnnotationMatrices()
 #print(ann_data)
+
 max_vals = {}
 for key in ann_data:
 	max_vals[key] = np.nanmax(ann_data[key].values)
-	
+#print(max_vals)	
+
 is_symmetric = {}
 for key in ann_data:
 	is_symmetric[key] = check_symmetry(ann_data[key].values)
-#print(max_vals)
+#print(is_symmetric)
 
-header1 = 'Scaffold Coord Ref Var Type Effect Transcript Ref_aa Coord_aa Var_aa Ref_aa_abbrev Var_aa_abbrev'
+header1 = 'Scaffold Coord Ref Var Type Effect Transcript Ref_aaa Coord_aa Var_aaa Ref_aa Var_aa'
 header2 = create_key_suffix_string(ann_data)
 print(header1 + ' ' + header2)
 if is_gz_file(sys.argv[1]):
@@ -149,6 +157,4 @@ if is_gz_file(sys.argv[1]):
 else:
     with open(sys.argv[1], 'r') as f:
     	parseSNPEffFile(f, aa_dict)
-
-print(is_symmetric)
 

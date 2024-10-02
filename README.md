@@ -21,10 +21,14 @@ A `gzip`ped vcf file from the [`snpEff`](http://snpeff.sourceforge.net/about.htm
 
 A csv file containing the result:
 
-Scaffold | Coord | Ref | Var | Type | Effect | Transcript | Ref_aa | Coord_aa | Var_aa | Ref_aa_abbrev | Var_aa_abbrev | aaI7 | exchgb_ref_var | exchgb_var_ref | sneath_dissim
--------- | ----- | --- | --- | ---- | ------ | ---------- | ------ | -------- | ------ | ------------- | ------------- | ---- | -------------- | -------------- | -------------
-Sc9M7eS_1_HRSCAF_2 | 362173 | A | C | missense_variant | MODERATE | mRNA20769 | Ile | 46 | Leu | I | L | 0.05 | 0.52 | 0.34 | 0.11
-Sc9M7eS_1_HRSCAF_2 | 412292 | T | A | missense_variant | MODERATE | mRNA20769 | Asp | 163 | Glu | D | E | 0.16 | 0.16 | 0.46 | 0.16
+| Scaffold               | Coord  | Ref | Var | Type             | Effect    | Transcript | Ref_aaa | Coord_aa | Var_aaa | Ref_aa | Var_aa | sneath | exchgb_RefVar | exchgb_VarRef | grantham | aai7 |
+|------------------------|--------|-----|-----|------------------|-----------|------------|--------|----------|--------|---------------|---------------|--------|---------------|---------------|----------|------|
+| Sc9M7eS_1_HRSCAF_2     | 362173 | A   | C   | missense_variant | MODERATE  | mRNA20769  | Ile    | 46       | Leu    | I             | L             | 0.11   | 0.48          | 0.66          | 0.02     | 0.05 |
+| Sc9M7eS_1_HRSCAF_2     | 412292 | T   | A   | missense_variant | MODERATE  | mRNA20769  | Asp    | 163      | Glu    | D             | E             | 0.16   | 0.84          | 0.54          | 0.21     | 0.16 |
+| Sc9M7eS_1_HRSCAF_2     | 456817 | T   | C   | missense_variant | MODERATE  | mRNA20770  | Lys    | 3194     | Arg    | K             | R             | 0.31   | 0.48          | 0.70          | 0.12     | 0.25 |
+| Sc9M7eS_1_HRSCAF_2     | 459865 | G   | A   | missense_variant | MODERATE  | mRNA20770  | Ser    | 2178     | Leu    | S             | L             | 0.51   | 0.33          | 0.47          | 0.67     | 0.54 |
+| Sc9M7eS_1_HRSCAF_2     | 461297 | A   | C   | missense_variant | MODERATE  | mRNA20770  | Ser    | 1701     | Ala    | S             | A             | 0.36   | 0.61          | 0.77          | 0.46     | 0.15 |
+| Sc9M7eS_1_HRSCAF_2     | 463630 | T   | C   | missense_variant | MODERATE  | mRNA20770  | Asn    | 923      | Ser    | N             | S             | 0.33   | 0.62          | 0.56          | 0.21     | 0.28 |
 
 **Note:** The exchaneability relation is non-symmetrical and, thus, we provide the value for both reference -> variant (`exchgb_ref_var`) and the variant -> reference (`exchgb_var_ref`) substitution.
 
