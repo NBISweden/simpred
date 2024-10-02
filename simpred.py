@@ -1,5 +1,5 @@
 # SNPEff parser
-
+import os
 import sys
 import gzip
 import binascii
@@ -7,11 +7,33 @@ import re
 import numpy as np
 import pandas as pd
 
+def get_csv_files(directory):
+    """Return a list of all CSV files in the specified directory."""
+    try:
+    	csv_files = [os.path.join(directory, f) for f in os.listdir(directory) if f.endswith('.csv')]
+    	return csv_files 
+    except Exception as e:
+    	print(f"Problem finding descriptor files in {directory}")
+
+def extract_name_from_comment(filepath):
+    """Extract the name from the first comment line in the CSV file."""
+    with open(filepath, 'r') as file:
+        line = file.readline().strip() 
+        if line.startswith('#'):  # Look for the comment line
+                return line[1:].split(' ')[0].strip()  # Remove the # and any surrounding whitespace from the first word after the comment
+    raise ValueError(f"First line invalid: {filepath}")
+
 def readAnnotationMatrices():
 	data = {}
-	data['aai7'] = pd.read_csv('data/idx_7aaI.csv', index_col = ['Src'], comment = '#', skip_blank_lines = True)
-	data['exchgb'] = pd.read_csv('data/idx_exchangeability.csv', index_col = ['Src'], comment = '#', skip_blank_lines = True)
-	data['sneath'] = pd.read_csv('data/idx_sneath_dissimilarity.csv', index_col = ['name'], comment = '#', skip_blank_lines = True)
+	data_files = get_csv_files('data')
+		
+	for filename in data_files:
+			print(f"Reading data from {filename}...")
+			try:
+				descriptor = extract_name_from_comment(filename)
+				data[descriptor] = pd.read_csv(filename, index_col = 0, comment = '#', skip_blank_lines = True)
+			except Exception as e:
+				print(e)
 	return(data)
 	
 def is_gz_file(filepath):
@@ -61,7 +83,6 @@ def parseSNPEffFile(f, aa_dict):
 
 def parseSNPEffAnn(ann, aa_dict):
 #['missense_variant|MODERATE|Sc9M7eS_1763_HRSCAF_2674_28679|gene07994|transcript|mRNA07994|protein_coding|4/14|c.3640G>A|p.Glu1214Lys|3640/5781|3640/5781|1214/1926||,T|', 'missense_variant|MODERATE|Sc9M7eS_1763_HRSCAF_2674_28679|gene07996|transcript|mRNA07996|protein_coding|4/13|c.3640G>A|p.Glu1214Lys|3640/5610|3640/5610|1214/1869||,T|', 'intron_variant|MODIFIER|Sc9M7eS_1763_HRSCAF_2674_28679|gene07995|transcript|mRNA07995|protein_coding|3/9|c.455-4448G>A||||||,T|', 'intron_variant|MODIFIER|Sc9M7eS_1763_HRSCAF_2674_28679|gene07997|transcript|mRNA07997|protein_coding|3/10|c.455-4448G>A||||||,T|', 'intron_variant|MODIFIER|Sc9M7eS_1763_HRSCAF_2674_28679|gene07998|transcript|mRNA07998|protein_coding|3/8|c.455-4448G>A||||||;AN=26;AC=7']
-	global ann_exchgb
 	d = {}
 	#print('Parsing ' + ann)
 	tmp = ann.strip().split('|')
@@ -78,24 +99,50 @@ def parseSNPEffAnn(ann, aa_dict):
 	d['aa1'] = aa3_to_aa1(d['ref'], aa_dict)
 	d['aa2'] = aa3_to_aa1(d['var'], aa_dict)
 	if (d['ref']) != '':
-		d['aai7'] = str(round((ann_aai7[d['aa1']][d['aa2']]) / ann_aai7_max, 2))
-		d['exchgb1'] = str(round((ann_exchgb_max - ann_exchgb[d['aa1']][d['aa2']]) / ann_exchgb_max, 2))
-		d['exchgb2'] = str(round((ann_exchgb_max - ann_exchgb[d['aa2']][d['aa1']]) / ann_exchgb_max, 2))
-		d['sneath'] = str(round((ann_sneath[d['aa2']][d['aa1']]) / ann_sneath_max, 2))
-	#print(d)
+		for key in ann_data:
+			d[key + 'RV'] = str(round((max_vals[key] - ann_data[key][d['aa1']][d['aa2']]) / max_vals[key], 2))
+			d[key + 'VR'] = str(round((max_vals[key] - ann_data[key][d['aa2']][d['aa1']]) / max_vals[key], 2))
 	return(d)
-		
-##################### Main ##################
-ann_data = readAnnotationMatrices()
-ann_aai7 = ann_data['aai7']
-ann_exchgb = ann_data['exchgb']
-ann_sneath = ann_data['sneath']
-aa_dict = load_aa_data()
-ann_aai7_max = np.nanmax(ann_data['aai7'].values)
-ann_exchgb_max = np.nanmax(ann_data['exchgb'].values)
-ann_sneath_max = np.nanmax(ann_data['sneath'].values)
 
-print('Scaffold Coord Ref Var Type Effect Transcript Ref_aa Coord_aa Var_aa Ref_aa_abbrev Var_aa_abbrev aaI7 exchgb_ref_var exchgb_var_ref sneath_dissim')
+def create_key_suffix_string(my_dict):
+    """Create a string with each key appearing twice, with suffixes 'RV' and 'VR'."""
+    result_list = []
+    
+    for key in my_dict:
+        result_list.append(f"{key}_RefVar")  # Append the key with 'RV' suffix
+        result_list.append(f"{key}_VarRef")  # Append the key with 'VR' suffix
+    
+    # Join the list elements into a single string, separated by spaces (or any delimiter you prefer)
+    result_string = ' '.join(result_list)
+    
+    return result_string
+    
+def check_symmetry(df):
+    """Check if a DataFrame is symmetric, allowing for floating-point precision and handling NaN values."""
+    # First, check if the DataFrame is square
+    if df.shape[0] != df.shape[1]:
+        return False
+    # Replace NaN values with 0 for comparison
+    df_filled = np.nan_to_num(df)  # Fill NaN values with 0 or any suitable value
+    # Use numpy's allclose for comparison to handle floating-point precision
+    return np.allclose(df_filled, df_filled.T)
+    
+##################### Main ##################
+aa_dict = load_aa_data()
+ann_data = readAnnotationMatrices()
+#print(ann_data)
+max_vals = {}
+for key in ann_data:
+	max_vals[key] = np.nanmax(ann_data[key].values)
+	
+is_symmetric = {}
+for key in ann_data:
+	is_symmetric[key] = check_symmetry(ann_data[key].values)
+#print(max_vals)
+
+header1 = 'Scaffold Coord Ref Var Type Effect Transcript Ref_aa Coord_aa Var_aa Ref_aa_abbrev Var_aa_abbrev'
+header2 = create_key_suffix_string(ann_data)
+print(header1 + ' ' + header2)
 if is_gz_file(sys.argv[1]):
     with gzip.open(sys.argv[1], 'rt') as f:
     	parseSNPEffFile(f, aa_dict)
@@ -103,5 +150,5 @@ else:
     with open(sys.argv[1], 'r') as f:
     	parseSNPEffFile(f, aa_dict)
 
-
+print(is_symmetric)
 
