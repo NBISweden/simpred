@@ -10,8 +10,8 @@ import pandas as pd
 def readAnnotationMatrices():
 	data = {}
 	data['aai7'] = pd.read_csv('data/idx_7aaI.csv', index_col = ['Src'], comment = '#', skip_blank_lines = True)
-	data['exchgb'] = pd.read_csv('data/idx_exchangeability.csv', index_col = ['Src'], skiprows = 4)
-	data['sneath'] = pd.read_csv('data/idx_sneath_dissimilarity.csv', index_col = ['name'], skiprows = 4)
+	data['exchgb'] = pd.read_csv('data/idx_exchangeability.csv', index_col = ['Src'], comment = '#', skip_blank_lines = True)
+	data['sneath'] = pd.read_csv('data/idx_sneath_dissimilarity.csv', index_col = ['name'], comment = '#', skip_blank_lines = True)
 	return(data)
 	
 def is_gz_file(filepath):
